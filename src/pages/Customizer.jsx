@@ -44,20 +44,29 @@ const Customizer = () => {
     });
   };
 
-   const handleSubmit =async()=>{
-    if(!prompt) return alert("Please enter a prompt");
+  const handleSubmit = async (type) => {
+    if (!prompt) return alert("Please enter a prompt");
 
-    try{
-   
-    }
-    catch(error){
+    try {
+      setGeneratingImg(true);
+      const response = await fetch("http://localhost:8080/api/v1/dalle", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt:prompt,
+        }),
+      });
+      const data = await response.json();
+      handleDecals(type, `data:image/png;base64,${data.photo}`);
+    } catch (error) {
       alert(error);
-    }
-    finally{
+    } finally {
       setGeneratingImg(false);
       setActiveEditorTab("");
     }
-   }
+  };
 
   const handleDecals = (type, result) => {
     const decalType = DecalTypes[type];
@@ -82,7 +91,14 @@ const Customizer = () => {
       case "filepicker":
         return <FilePicker file={file} setFile={setFile} readFile={readFile} />;
       case "aipicker":
-        return <AIPicker />;
+        return (
+          <AIPicker
+            generatingImg={generatingImg}
+            prompt={prompt}
+            handleSubmit={handleSubmit}
+            setPrompt={setPrompt}
+          />
+        );
       default:
         return null;
     }
