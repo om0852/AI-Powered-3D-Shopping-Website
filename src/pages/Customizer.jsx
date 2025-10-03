@@ -50,8 +50,9 @@ const Customizer = () => {
             <div className="flex  items-center min-h-screen">
               <div className="editortabs-container glassmorphism tabs">
                 {EditorTabs.map((tab) => (
-                  <Tab tab={tab} key={tab.name} handleClick={() => {}} />
+                  <Tab tab={tab} key={tab.name} handleClick={() => setActiveEditorTab(tab.name)} />
                 ))}
+                {generateTabContent()}
               </div>
             </div>
           </motion.div>
