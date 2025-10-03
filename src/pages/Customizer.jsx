@@ -24,6 +24,55 @@ const Customizer = () => {
     logoShirt: true,
     stylishShirt: false,
   });
+  const handleActiveFilterTab = (tabName) => {
+    switch (tabName) {
+      case "logoShirt":
+        state.isLogoTexture = !activeFilterTab[tabName];
+        break;
+      case "stylishShirt":
+        state.isFullTexture = !activeFilterTab[tabName];
+        break;
+      default:
+        state.isLogoTexture = true;
+        state.isFullTexture = false;
+    }
+    setActiveFilterTab((prevState) => {
+      return {
+        ...prevState,
+        [tabName]: !prevState[tabName],
+      };
+    });
+  };
+
+   const handleSubmit =async()=>{
+    if(!prompt) return alert("Please enter a prompt");
+
+    try{
+   
+    }
+    catch(error){
+      alert(error);
+    }
+    finally{
+      setGeneratingImg(false);
+      setActiveEditorTab("");
+    }
+   }
+
+  const handleDecals = (type, result) => {
+    const decalType = DecalTypes[type];
+    state[decalType.stateProperty] = result;
+
+    if (!activeFilterTab[decalType.filterTab]) {
+      handleActiveFilterTab(decalType.filterTab);
+    }
+  };
+  const readFile = (type) => {
+    reader(file).then((result) => {
+      handleDecals(type, result);
+      setActiveEditorTab("");
+    });
+  };
 
   const generateTabContent = () => {
     switch (activeEditorTab) {
@@ -31,7 +80,7 @@ const Customizer = () => {
         return <ColorPicker />;
 
       case "filepicker":
-        return <FilePicker />;
+        return <FilePicker file={file} setFile={setFile} readFile={readFile} />;
       case "aipicker":
         return <AIPicker />;
       default:
@@ -50,7 +99,11 @@ const Customizer = () => {
             <div className="flex  items-center min-h-screen">
               <div className="editortabs-container glassmorphism tabs">
                 {EditorTabs.map((tab) => (
-                  <Tab tab={tab} key={tab.name} handleClick={() => setActiveEditorTab(tab.name)} />
+                  <Tab
+                    tab={tab}
+                    key={tab.name}
+                    handleClick={() => setActiveEditorTab(tab.name)}
+                  />
                 ))}
                 {generateTabContent()}
               </div>
@@ -76,8 +129,8 @@ const Customizer = () => {
                 tab={tab}
                 key={tab.name}
                 isFilterTab
-                isActiveTab="all"
-                handleClick={() => {}}
+                isActiveTab={activeFilterTab[tab.name]}
+                handleClick={() => handleActiveFilterTab(tab.name)}
               />
             ))}
           </motion.div>
